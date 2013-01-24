@@ -1,3 +1,4 @@
+connect = require 'connect'
 captureResponse = require './../capture'
 {Rewriter, NO_TRANSFORM, outputTag} = require './../rewrite'
 
@@ -16,6 +17,8 @@ transformUrl = (el, addHost) ->
         - form (action)
     ###
     
+    connect.logger "in transform"
+    
     if el.name == 'a' or el.name == 'link'
         if !el.attribs? or !el.attribs.href
             return NO_TRANSFORM
@@ -24,6 +27,9 @@ transformUrl = (el, addHost) ->
         outputTag el
 
     else if el.name == 'img' or el.name == 'style' or el.name == 'script' or el.name == 'iframe'
+        
+        console.log "Name " + el.name
+        
         if !el.attribs? or !el.attribs.src
             return NO_TRANSFORM
 
