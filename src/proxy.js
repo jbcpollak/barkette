@@ -1,23 +1,3 @@
-var Connect, Http, KITTY_INDEX, LOG_FORMAT, PROXY_EXTERNAL_PORT, PROXY_PORT, PROXY_PREFIX, PROXY_SUFFIX_DOMAIN, Server, catInjectorApp, getHostUtilities, gunZip, handler, proxyRequest, randomCat, rewriteHTML, rewriteHost, robots, setupCatInjector, setupStatic, staticApp;
-
-Http = require('http');
-
-Connect = require('connect');
-
-getHostUtilities = require('./utils').getHostUtilities;
-
-rewriteHTML = require('./middleware/rewriteHTML');
-
-randomCat = require('./middleware/randomCat');
-
-rewriteHost = require('./middleware/rewriteHost');
-
-gunZip = require('./middleware/gzip').gunZip;
-
-proxyRequest = require('./middleware/proxyRequest');
-
-robots = require('./middleware/robots');
-
 /*
 Cat Injecting Proxy
 
@@ -105,6 +85,26 @@ LOG_FORMAT
 Default: ':method :status :response-time \t:req[Host]:url :user-agent'
 */
 
+var LOG_FORMAT, PROXY_EXTERNAL_PORT, PROXY_PORT, PROXY_PREFIX, PROXY_SUFFIX_DOMAIN, Server, catInjectorApp, gunZip, handler, proxyRequest, randomCat, rewriteHost, robots, setupStatic, staticApp;
+
+var fs = require('fs');
+var Http = require('http');
+
+var Connect = require('connect');
+
+var getHostUtilities = require('./utils').getHostUtilities;
+
+var rewriteHTML = require('./middleware/rewriteHTML');
+
+randomCat = require('./middleware/randomCat');
+
+rewriteHost = require('./middleware/rewriteHost');
+
+gunZip = require('./middleware/gzip').gunZip;
+
+proxyRequest = require('./middleware/proxyRequest');
+
+robots = require('./middleware/robots');
 
 PROXY_PORT = process.env.PORT || 5000;
 
@@ -116,9 +116,10 @@ LOG_FORMAT = ':method :status :response-time \t:req[Host]:url :user-agent';
 
 PROXY_PREFIX = process.env.PREFIX_SUBDOMAIN || "cat";
 
-KITTY_INDEX = "" + __dirname + "/../kitties.txt";
+//var IMAGES_INDEX = "" + __dirname + "/../kitties.txt";
+var IMAGES_INDEX = "" + __dirname + "/../doggies.txt";
 
-setupCatInjector = function() {
+var setupCatInjector = function() {
   var app, isSecure;
   
   var _ref = getHostUtilities(PROXY_SUFFIX_DOMAIN, PROXY_EXTERNAL_PORT, PROXY_PREFIX);
@@ -136,16 +137,17 @@ setupCatInjector = function() {
     return next();
   };
 
+
   app = Connect();
-  app.use(Connect.logger(LOG_FORMAT))
-    .use(robots)
-    .use(isSecure)
-    .use(randomCat(KITTY_INDEX))
-    .use(rewriteHTML(addHost))
-    .use(rewriteHost(addHost, removeHost))
-    .use(gunZip)
-    .use(proxyRequest);
-  return app;
+    app.use(Connect.logger(LOG_FORMAT))
+      .use(robots)
+      .use(isSecure)
+      .use(randomCat(IMAGES_INDEX))
+      .use(rewriteHTML(addHost))
+      .use(rewriteHost(addHost, removeHost))
+      .use(gunZip)
+      .use(proxyRequest);
+    return app;
 };
 
 setupStatic = function() {
@@ -177,13 +179,12 @@ Setup the handler
 
 console.log("Starting Meowbify on " + PROXY_PORT);
 
-catInjectorApp = setupCatInjector();
+var catInjectorApp = setupCatInjector();
 
 staticApp = setupStatic();
 
 handler = function(req, res) {
-  var proxyRe;
-  proxyRe = RegExp(".*\.jpg");
+  var proxyRe = RegExp(".*\.jpg");
   if (proxyRe.test(req.url)) {
     return staticApp.handle(req, res);
   } else {
