@@ -44,14 +44,14 @@ exports.getHostUtilities = getHostUtilities = function(domain, port, prefix) {
     console.log("addHost for " + url);
     addHostToHost = function(host, secure) {
       console.log("addHostToHost for " + url + " host: " + host);
-      var newHost;
-      newHost = "";
-      if (options.prefix && secure) {
-        newHost += "" + prefix + "s.";
-      } else if (options.prefix && !secure) {
-        newHost += "" + prefix + ".";
-      }
-      newHost += "" + host + "." + domain;
+      var newHost = "";
+      // if (options.prefix && secure) {
+      //   newHost += "" + prefix + "s.";
+      // } else if (options.prefix && !secure) {
+      //   newHost += "" + prefix + ".";
+      // }
+      // newHost += "" + host + "." + domain;
+      newHost = domain;
       if (options.port && port !== 80) {
         newHost += ":" + port;
       }
