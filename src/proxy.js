@@ -119,8 +119,14 @@ PROXY_PREFIX = process.env.PREFIX_SUBDOMAIN || "cat";
 KITTY_INDEX = "" + __dirname + "/../kitties.txt";
 
 setupCatInjector = function() {
-  var addHost, app, isHostSecure, isSecure, removeHost, _ref;
-  _ref = getHostUtilities(PROXY_SUFFIX_DOMAIN, PROXY_EXTERNAL_PORT, PROXY_PREFIX), addHost = _ref[0], removeHost = _ref[1], isHostSecure = _ref[2];
+  var app, isSecure;
+  
+  var _ref = getHostUtilities(PROXY_SUFFIX_DOMAIN, PROXY_EXTERNAL_PORT, PROXY_PREFIX);
+  var addHost = _ref[0];
+  var removeHost = _ref[1];
+  var isHostSecure = _ref[2];
+
+
   isSecure = function(req, res, next) {
     if (isHostSecure(req.headers['host'])) {
       req.secure = true;
@@ -129,8 +135,16 @@ setupCatInjector = function() {
     }
     return next();
   };
+
   app = Connect();
-  app.use(Connect.logger(LOG_FORMAT)).use(robots).use(isSecure).use(randomCat(KITTY_INDEX)).use(rewriteHTML(addHost)).use(rewriteHost(addHost, removeHost)).use(gunZip).use(proxyRequest);
+  app.use(Connect.logger(LOG_FORMAT))
+    .use(robots)
+    .use(isSecure)
+    .use(randomCat(KITTY_INDEX))
+    .use(rewriteHTML(addHost))
+    .use(rewriteHost(addHost, removeHost))
+    .use(gunZip)
+    .use(proxyRequest);
   return app;
 };
 
@@ -169,11 +183,11 @@ staticApp = setupStatic();
 
 handler = function(req, res) {
   var proxyRe;
-  proxyRe = RegExp("^" + PROXY_PREFIX + "s?[.]");
-  if (proxyRe.test(req.headers['host'])) {
-    return catInjectorApp.handle(req, res);
-  } else {
+  proxyRe = RegExp(".*\.jpg");
+  if (proxyRe.test(req.url)) {
     return staticApp.handle(req, res);
+  } else {
+   return catInjectorApp.handle(req, res);
   }
 };
 

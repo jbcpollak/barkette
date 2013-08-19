@@ -11,22 +11,27 @@ Url Options
 
 
     port (default true, unless port 80)
-        If the string is should contain a port.
+        If the string should contain a port.
     
     prefix (default true)
-        If we should prended the protocol prefix.
+        If we should pre-pended the protocol prefix.
 */
 
 
 exports.getHostUtilities = getHostUtilities = function(domain, port, prefix) {
-  var HOST_REGEX, addHost, isHostSecure, removeHost;
+
+  //var HOST_REGEX = new RegExp("^" + prefix + "(s)?[.](.*)[.]" + domain + "(:\\d+)?", "i");
+
+  var isHostSecure;
   if (port == null) {
     port = 80;
   }
   if (prefix == null) {
     prefix = "http";
   }
-  addHost = function(url, options) {
+
+  var addHost = function(url, options) {
+    console.log("in addHost");
     var addHostToHost, urlobj;
     if (options == null) {
       options = {};
@@ -36,7 +41,9 @@ exports.getHostUtilities = getHostUtilities = function(domain, port, prefix) {
       prefix: true,
       url: false
     });
+    console.log("addHost for " + url);
     addHostToHost = function(host, secure) {
+      console.log("addHostToHost for " + url + " host: " + host);
       var newHost;
       newHost = "";
       if (options.prefix && secure) {
@@ -61,8 +68,8 @@ exports.getHostUtilities = getHostUtilities = function(domain, port, prefix) {
       return addHostToHost(url);
     }
   };
-  HOST_REGEX = new RegExp("^" + prefix + "(s)?[.](.*)[.]" + domain + "(:\\d+)?", "i");
-  removeHost = function(url, options) {
+  
+  var removeHost = function(url, options) {
     var host, removeHostFromHost, secure, urlobj, _ref, _ref1;
     if (options == null) {
       options = {};
@@ -73,17 +80,18 @@ exports.getHostUtilities = getHostUtilities = function(domain, port, prefix) {
       url: false
     });
     removeHostFromHost = function(host) {
-      var match;
-      match = host.match(HOST_REGEX);
-      if (match) {
+      //var match = host.match(HOST_REGEX);
+      //if (match) {
         return {
-          host: match[2],
-          secure: match[1] === 's'
+          //host: match[2],
+          //match[1] === 's'
+          host: 'snapette.com',
+          secure: true
         };
-      } else {
-        console.log("Error transforming host: " + host);
-        return host;
-      }
+      //} else {
+      //   console.log("Error transforming host: " + host);
+      //   return host;
+      // }
     };
     if (options.url) {
       urlobj = Url.parse(url, false, true);
@@ -99,13 +107,13 @@ exports.getHostUtilities = getHostUtilities = function(domain, port, prefix) {
     }
   };
   isHostSecure = function(host) {
-    var match;
-    match = host.match(HOST_REGEX);
-    if (match[1] === 's') {
+    // var match;
+    // match = host.match(HOST_REGEX);
+    // if (match[1] === 's') {
       return true;
-    } else {
-      return false;
-    }
+    // } else {
+      // return false;
+    // }
   };
   return [addHost, removeHost, isHostSecure];
 };
