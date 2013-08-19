@@ -110,7 +110,7 @@ PROXY_PORT = process.env.PORT || 5000;
 
 PROXY_EXTERNAL_PORT = process.env.EXTERNAL_PORT || 80;
 
-PROXY_SUFFIX_DOMAIN = process.env.SUFFIX_DOMAIN || "barkette.com";
+PROXY_SUFFIX_DOMAIN = process.env.SUFFIX_DOMAIN || "www.barkette.com";
 
 LOG_FORMAT = ':method :status :response-time \t:req[Host]:url :user-agent';
 
